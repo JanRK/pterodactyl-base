@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - '*'
-      - '!main'
   workflow_dispatch:
     inputs:
       branch:
@@ -28,11 +27,13 @@ jobs:
 
     - name: Checkout code
       uses: actions/checkout@v4
+      if: github.ref_name != 'main'
       with:
         ref: ${{ inputs.branch || github.ref_name }}
         
     - name: Login to Quay
       uses: docker/login-action@v3
+      if: github.ref_name != 'main'
       with:
         registry: quay.io
         username: ${{ secrets.QUAY_USER }}
@@ -40,7 +41,8 @@ jobs:
 
     - name: Build and push
       uses: docker/build-push-action@v6
+      if: github.ref_name != 'main'
       with:
         context: .
         push: true
-        tags: ${{ steps.tag.outputs.REGISTRY_IMAGE }}:${{ github.ref_name }}
+        tags: ${{ steps.tag.outputs.REGISTRY_IMAGE }}:${{ inputs.branch || github.ref_name }}
