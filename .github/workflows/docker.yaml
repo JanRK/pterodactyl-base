@@ -16,9 +16,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+    - name: Get Tag
+      id: tag
+      shell: pwsh
+      run: |
+        $tag = "REGISTRY_IMAGE=quay.io/" + ($env:GITHUB_REPOSITORY).ToLower() 
+        write-host $tag
+        $tag >> $env:GITHUB_OUTPUT
+
+
     - name: Checkout code
       uses: actions/checkout@v4
-
+      with:
+        ref: ${{ inputs.branch || github.ref_name }}
+        
     - name: Login to Quay
       uses: docker/login-action@v3
       with:
@@ -30,4 +42,4 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         push: true
-        tags: quay.io/${{ github.repository }}:${{ github.ref_name }}
+        tags: ${{ steps.tag.outputs.REGISTRY_IMAGE }}:${{ github.ref_name }}
