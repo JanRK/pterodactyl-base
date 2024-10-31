@@ -17,16 +17,17 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Login to Quay
-      uses: docker/login-action@v1
+      uses: docker/login-action@v3
       with:
-        registry: https://quay.io
+        registry: quay.io
         username: ${{ secrets.QUAY_USER }}
         password: ${{ secrets.QUAY_TOKEN }}
 
-    - name: Build and Push
-      run: |
-        docker build -t ${{ github.repository }}:${{ github.ref_name }} .
-        docker push ${{ github.repository }}:${{ github.ref_name }}
+    - name: Build and push
+      uses: docker/build-push-action@v6
+      with:
+        push: true
+        tags: quay.io/${{ github.repository }}:${{ github.ref_name }}
