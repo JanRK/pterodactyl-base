@@ -2,7 +2,6 @@ FROM debian:stable-slim
 
 ENV DEBIAN_FRONTEND noninteractive
 
-## add container user
 RUN useradd -m -d /home/container -s /bin/bash container
 
 RUN ln -s /home/container/ /nonexistent
